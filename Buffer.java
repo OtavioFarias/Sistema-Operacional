@@ -10,22 +10,23 @@ public class Buffer {
     private int MaxSize; //tamanho total
     private Integer heap[]; // heap de ids
     private Queue<Integer> fila;         // fila de ids
+    private int garbagePercent;
 
-    public Buffer(int MaxSize) {
+    public Buffer(int MaxSize, int garbagePercent) {
         this.MaxSize = MaxSize;
+        this.garbagePercent = garbagePercent;
         this.heap = new Integer[MaxSize];
         this.fila = new LinkedList<>();
     }
 
     public void insert(Requisicao item) {
         if (inserirHeap(item) == 1){
-            size += item.getTamanho();
-            System.out.println("id " + item.getId() + " tamanho " + item.getTamanho() + " adicionado com sucesso!");
-            System.out.println("Espaço atual da heap:" + (MaxSize - size));
-            fila.add(item.getId());     // adiciona o id à fila
+            size += item.tamanho;
+            System.out.println("id " + item.id + " tamanho " + item.tamanho + " adicionado com sucesso!");
+            System.out.println("Espaço usado da heap:" + size);
         } else {
             System.out.println("Buffer cheio");
-            remove();
+            garbageCollector();
             insert(item);
         }
     }
@@ -36,9 +37,10 @@ public class Buffer {
         while(true){
             if(heap[i] == null && i < MaxSize){
                 count++;
-                if(count == item.getTamanho()){
+                if(count == item.tamanho){
+                    fila.add(item.id);     // adiciona o id à fila
                     while(count > 0){
-                        heap[i] = item.getId();
+                        heap[i] = item.id;
                         i--;
                         count--;
                     }
@@ -53,22 +55,37 @@ public class Buffer {
         }
     }
 
-    public Integer remove() {
-        if (!fila.isEmpty()) {
-            Integer id = fila.poll();    // remove da fila
-            // remove da heap
-            for(int i = 0; i < MaxSize; i++){
-                if(heap[i] == id) {
-                heap[i] = null;
-                size--;
-                }
+    public void remove() {
+        Integer id = fila.poll();    // remove da fila
+        // remove da heap
+        for(int i = 0; i < MaxSize; i++){
+            if(heap[i] == id) {
+            heap[i] = null;
+            size--;
             }
-            System.out.println("id " + id + " removido com sucesso!");
-            System.out.println("Espaço atual da heap: " + (MaxSize-size));
-            return id;
-        } else {
-            System.out.println("Buffer vazio. Nada a remover.");
-            return null;
+        }
+        System.out.println("id " + id + " removido com sucesso!");
+        System.out.println("Espaço usado da heap: " + (size));
+
+    }
+
+    public void garbageCollector(){
+
+        if(size*100/MaxSize < garbagePercent){
+            remove();
+        }
+        compactador();
+    }
+
+    public void compactador(){
+
+        for(int i = MaxSize - 1; i > 0; i--){
+            if(heap[i] == null){
+
+                heap[i] = heap[i-1];
+                heap[i-1] = null;
+
+            }
         }
     }
 
@@ -76,7 +93,7 @@ public class Buffer {
     public void printHeap() {
         System.out.println("Heap: ");
         for(int i = 0; i < MaxSize; i++){
-            System.out.println(heap[i]);
+            System.out.print(" " + heap[i]);
          }
     }
 

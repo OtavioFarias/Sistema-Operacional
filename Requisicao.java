@@ -1,8 +1,8 @@
 package tools;
 public class Requisicao{
 
-    private int id;
-    private int tamanho;
+    public int id;
+    public int tamanho;
 
     public Requisicao(int id, int tamanho){
         this.id = id;
