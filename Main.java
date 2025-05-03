@@ -19,7 +19,7 @@ public class Main {
         int id = 0;
 
         if(garbagePercent > 100 || garbagePercent < 0) garbagePercent = 30;
-        if(bloco < 4) bloco = 4;
+        if(bloco < 1) bloco = 1;
         if(min < 16) min = 16;
         if(tamanhoBuffer < min) tamanhoBuffer = min + 1;
         if(max > tamanhoBuffer) max = tamanhoBuffer;
@@ -51,6 +51,6 @@ public class Main {
 
         long duration = (endTime - startTime);
 
-        CsvLogger.salvarDados(tamanhoBuffer, min, max, numeroDeRequisicoes, buffer.numCompac, buffer.numRemocao, garbagePercent, bloco, duration);
+        CsvLogger.salvarDados(tamanhoBuffer, min, max, numeroDeRequisicoes, buffer.numCompac, buffer.numRemocao, garbagePercent, bloco, buffer.tamanhoTotalReq/numeroDeRequisicoes, buffer.tamanhoTotalBloco/numeroDeRequisicoes, duration);
     }
 }

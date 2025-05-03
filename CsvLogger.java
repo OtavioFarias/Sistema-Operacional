@@ -6,9 +6,9 @@ import java.io.IOException;
 public class CsvLogger {
 
     private static final String FILE_NAME = "tempos.csv";
-    private static final String HEADER = "tamanhoBuffer,min,max,numExecucao,numRemocao,numCompactacao,garbagePercent,bloco,tempo";
+    private static final String HEADER = "tamanhoBuffer,min,max,numExecucao,numRemocao,numCompactacao,garbagePercent,bloco,tamanhoMedioReq,tamanhoMedioBloco,tempo";
 
-    public static void salvarDados(int tamanhoBuffer, int min, int max, int numExecucao, int numRemocao, int numCompactacao, int garbagePercent, int bloco, long tempo) {
+    public static void salvarDados(int tamanhoBuffer, int min, int max, int numExecucao, int numRemocao, int numCompactacao, int garbagePercent, int bloco, int tamanhoMedioReq, int tamanhoMedioBloco, long tempo) {
         File file = new File(FILE_NAME);
         boolean fileExists = file.exists();
 
@@ -19,7 +19,7 @@ public class CsvLogger {
             }
 
             // Adiciona a nova linha de dados
-            writer.write(String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d\n", tamanhoBuffer, min, max, numExecucao, numRemocao, numCompactacao,garbagePercent, bloco, tempo));
+            writer.write(String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", tamanhoBuffer, min, max, numExecucao, numRemocao, numCompactacao,garbagePercent, bloco, tamanhoMedioReq, tamanhoMedioBloco, tempo));
         } catch (IOException e) {
             e.printStackTrace();
         }

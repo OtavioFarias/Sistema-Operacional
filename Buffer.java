@@ -13,6 +13,8 @@ public class Buffer {
     private int garbagePercent;
     public int numCompac;
     public int numRemocao;
+    public int tamanhoTotalReq;
+    public int tamanhoTotalBloco;
 
     public Buffer(int MaxSize, int garbagePercent) {
         this.MaxSize = MaxSize;
@@ -21,10 +23,14 @@ public class Buffer {
         this.fila = new LinkedList<>();
         this.numCompac = 0;
         this.numRemocao = 0;
+        this.tamanhoTotalReq = 0;
+        this.tamanhoTotalBloco = 0;
     }
 
     public void insert(Requisicao item) {
         if (inserirHeap(item) == 1){
+            tamanhoTotalBloco += item.tamanho;
+            tamanhoTotalReq += item.tamanhoR;
             size += item.tamanho;
             System.out.println("id " + item.id + " tamanho " + item.tamanho + " adicionado com sucesso!");
             System.out.println("Espaço usado da heap:" + size);

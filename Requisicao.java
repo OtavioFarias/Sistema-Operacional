@@ -3,10 +3,12 @@ public class Requisicao{
 
     public Integer id;
     public int tamanho;
+    public int tamanhoR;
 
-    public Requisicao(int id, int tamanho, int bloco){
+    public Requisicao(int id, int tamanhoR, int bloco){
         this.id = id;
-        this.tamanho = ((tamanho + bloco - 1)/bloco ) * bloco;
+        this.tamanhoR = tamanhoR;
+        this.tamanho = ((tamanhoR + bloco - 1)/bloco ) * bloco;
     }
 
     public Requisicao(int id){
