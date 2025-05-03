@@ -34,6 +34,7 @@ public class Buffer {
     private int inserirHeap(Requisicao item){
         int count = 0;
         int i = 0;
+        if(item.tamanho > MaxSize - size) return 0;
         while(true){
             if(heap[i] == null && i < MaxSize){
                 count++;
@@ -59,6 +60,7 @@ public class Buffer {
         Integer id = fila.poll();    // remove da fila
         // remove da heap
         for(int i = 0; i < MaxSize; i++){
+            //printHeap();
             if(heap[i] == id) {
                 heap[i] = null;
                 size--;
@@ -69,9 +71,9 @@ public class Buffer {
 
     }
 
-    public void garbageCollector(int tamanho){
+    public void garbageCollector(int tamanho){//verificar se if para chamar garbage não é mais eficiente
 
-        while(100-size*100/MaxSize < garbagePercent || MaxSize - size < tamanho){
+        while(100-size*100/MaxSize < garbagePercent || (MaxSize - size) < tamanho){
             remove();
         }
         compactador();

@@ -18,6 +18,7 @@ public class Main {
         int bloco = Integer.parseInt(args[5]);
         int id = 0;
 
+        if(garbagePercent > 100 || garbagePercent < 0) garbagePercent = 30;
         if(bloco < 4) bloco = 4;
         if(min < 16) min = 16;
         if(tamanhoBuffer < min) tamanhoBuffer = min + 1;

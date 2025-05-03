@@ -1,7 +1,7 @@
 package tools;
 public class Requisicao{
 
-    public int id;
+    public Integer id;
     public int tamanho;
 
     public Requisicao(int id, int tamanho, int bloco){
