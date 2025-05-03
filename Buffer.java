@@ -26,7 +26,7 @@ public class Buffer {
             System.out.println("Espaço usado da heap:" + size);
         } else {
             System.out.println("Buffer cheio");
-            garbageCollector();
+            garbageCollector(item.tamanho);
             insert(item);
         }
     }
@@ -69,9 +69,9 @@ public class Buffer {
 
     }
 
-    public void garbageCollector(){
+    public void garbageCollector(int tamanho){
 
-        if(size*100/MaxSize < garbagePercent){
+        while(size*100/MaxSize > garbagePercent || MaxSize - size < tamanho){ //arrumar a lógica do 30 e garantir que os max não sejam maiores que o size e o min não seja menor que 16 - colocar blocos
             remove();
         }
         compactador();
