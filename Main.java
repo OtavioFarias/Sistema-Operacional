@@ -51,6 +51,6 @@ public class Main {
 
         long duration = (endTime - startTime);
 
-        CsvLogger.salvarDados(tamanhoBuffer, min, max, numeroDeRequisicoes, garbagePercent, bloco, duration);
+        CsvLogger.salvarDados(tamanhoBuffer, min, max, numeroDeRequisicoes, buffer.numCompac, buffer.numRemocao, garbagePercent, bloco, duration);
     }
 }

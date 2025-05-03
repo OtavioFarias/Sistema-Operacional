@@ -11,12 +11,16 @@ public class Buffer {
     private Integer heap[]; // heap de ids
     private Queue<Integer> fila;         // fila de ids
     private int garbagePercent;
+    public int numCompac;
+    public int numRemocao;
 
     public Buffer(int MaxSize, int garbagePercent) {
         this.MaxSize = MaxSize;
         this.garbagePercent = garbagePercent;
         this.heap = new Integer[MaxSize];
         this.fila = new LinkedList<>();
+        this.numCompac = 0;
+        this.numRemocao = 0;
     }
 
     public void insert(Requisicao item) {
@@ -57,6 +61,7 @@ public class Buffer {
     }
 
     public void remove() {
+        numRemocao++;
         Integer id = fila.poll();    // remove da fila
         // remove da heap
         for(int i = 0; i < MaxSize; i++){
@@ -76,6 +81,7 @@ public class Buffer {
         while(100-size*100/MaxSize < garbagePercent || (MaxSize - size) < tamanho){
             remove();
         }
+        numCompac++;
         compactador();
     }
 
