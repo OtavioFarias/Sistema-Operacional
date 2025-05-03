@@ -30,7 +30,9 @@ public class Main {
         // Criar buffer
         Buffer buffer = new Buffer(tamanhoBuffer, garbagePercent);
 
-        int requisicoesEnviadas = 0;
+        int requisicoesEnviadas = 1;
+
+        long startTime = System.nanoTime();
 
         while (requisicoesEnviadas < numeroDeRequisicoes) {
 
@@ -41,10 +43,14 @@ public class Main {
 
         }
 
+        long endTime = System.nanoTime();
 
         System.out.println();
         buffer.printHeap();
         System.out.println();
 
+        long duration = (endTime - startTime);
+
+        CsvLogger.salvarDados(tamanhoBuffer, min, max, numeroDeRequisicoes, garbagePercent, bloco, duration);
     }
 }
