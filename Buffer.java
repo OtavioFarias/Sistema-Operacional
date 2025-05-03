@@ -60,8 +60,8 @@ public class Buffer {
         // remove da heap
         for(int i = 0; i < MaxSize; i++){
             if(heap[i] == id) {
-            heap[i] = null;
-            size--;
+                heap[i] = null;
+                size--;
             }
         }
         System.out.println("id " + id + " removido com sucesso!");
@@ -71,7 +71,7 @@ public class Buffer {
 
     public void garbageCollector(int tamanho){
 
-        while(size*100/MaxSize > garbagePercent || MaxSize - size < tamanho){ //arrumar a lógica do 30 e garantir que os max não sejam maiores que o size e o min não seja menor que 16 - colocar blocos
+        while(100-size*100/MaxSize < garbagePercent || MaxSize - size < tamanho){ // e o minnão seja menor que 16 - colocar blocos
             remove();
         }
         compactador();

@@ -17,6 +17,12 @@ public class Main {
         int garbagePercent = Integer.parseInt(args[4]);
         int id = 0;
 
+        if(min < 16) min = 16;
+        if(tamanhoBuffer < min) tamanhoBuffer = min + 1;
+        if(max > tamanhoBuffer) max = tamanhoBuffer;
+        if(max < min) max = min + 1;
+
+
         // Criar buffer
         Buffer buffer = new Buffer(tamanhoBuffer, garbagePercent);
 
