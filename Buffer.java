@@ -71,7 +71,7 @@ public class Buffer {
 
     public void garbageCollector(int tamanho){
 
-        while(100-size*100/MaxSize < garbagePercent || MaxSize - size < tamanho){ // e o minnão seja menor que 16 - colocar blocos
+        while(100-size*100/MaxSize < garbagePercent || MaxSize - size < tamanho){
             remove();
         }
         compactador();

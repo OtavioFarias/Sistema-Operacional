@@ -4,9 +4,9 @@ public class Requisicao{
     public int id;
     public int tamanho;
 
-    public Requisicao(int id, int tamanho){
+    public Requisicao(int id, int tamanho, int bloco){
         this.id = id;
-        this.tamanho = tamanho;
+        this.tamanho = ((tamanho + bloco - 1)/bloco ) * bloco;
     }
 
     public Requisicao(int id){
