@@ -8,7 +8,7 @@ public class Requisicao{
     public Requisicao(int id, int tamanhoR, int bloco){
         this.id = id;
         this.tamanhoR = tamanhoR;
-        this.tamanho = ((tamanhoR + bloco - 1)/bloco ) * bloco;
+        this.tamanho = (((tamanhoR + bloco - 1)/bloco ) * bloco)/4;
     }
 
     public Requisicao(int id){

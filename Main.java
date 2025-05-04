@@ -30,7 +30,7 @@ public class Main {
         // Criar buffer
         Buffer buffer = new Buffer(tamanhoBuffer, garbagePercent);
 
-        int requisicoesEnviadas = 1;
+        int requisicoesEnviadas = 0;
 
         long startTime = System.nanoTime();
 

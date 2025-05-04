@@ -32,7 +32,7 @@ public class Buffer {
             tamanhoTotalBloco += item.tamanho;
             tamanhoTotalReq += item.tamanhoR;
             size += item.tamanho;
-            System.out.println("id " + item.id + " tamanho " + item.tamanho + " adicionado com sucesso!");
+            System.out.println("id " + item.id + " blocos usados " + item.tamanho + " adicionado com sucesso!");
             System.out.println("Espaço usado da heap:" + size);
         } else {
             System.out.println("Buffer cheio");
