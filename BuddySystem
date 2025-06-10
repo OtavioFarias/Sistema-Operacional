@@ -1,0 +1,19 @@
+public class BuddySystem {
+    private int maxLevel;
+    private int minLevel;
+    private Map<Integer, List<Integer>> freeLists; // level -> list of starting addresses
+    private Set<Integer> usedBlocks;
+
+    public BuddySystem(int totalSize, int minBlockSize) {
+        this.minLevel = (int) (Math.log(minBlockSize) / Math.log(2));
+        this.maxLevel = (int) (Math.log(totalSize) / Math.log(2));
+        this.freeLists = new HashMap<>();
+        this.usedBlocks = new HashSet<>();
+
+        for (int i = minLevel; i <= maxLevel; i++) {
+            freeLists.put(i, new ArrayList<>());
+        }
+
+        // Start with one big free block
+        freeLists.get(maxLevel).add(0);
+    }
