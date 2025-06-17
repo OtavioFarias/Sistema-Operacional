@@ -8,9 +8,10 @@ public class MinhaThread extends Thread{
 		BuddySystem buddy;
 		Queue<Integer> queueRequisicoes;
 		Queue<Integer> queueAlocadas;
+		int numeroDaThread;
 	
-		public MinhaThread(BuddySystem buddy, Queue<Integer> queueRequisicoes, Queue<Integer> queueAlocadas){
-				
+		public MinhaThread(BuddySystem buddy, Queue<Integer> queueRequisicoes, Queue<Integer> queueAlocadas, int numeroDaThread){
+				this.numeroDaThread = numeroDaThread;
 				this.buddy = buddy;
 				this.queueRequisicoes = queueRequisicoes;
 				this.queueAlocadas = queueAlocadas;
@@ -21,14 +22,16 @@ public class MinhaThread extends Thread{
 				while(!queueRequisicoes.isEmpty()){
 						Integer n = queueRequisicoes.remove();
 						
-						if(buddy.allocate(n) == null){
+						Integer addr = buddy.allocate(n);
+						
+						while(addr == null){
 								buddy.free(queueAlocadas.remove());
-								buddy.allocate(n); 
-						}
+								addr = buddy.allocate(n); 
+						};
 						
-						queueAlocadas.add(n);
+						queueAlocadas.add(addr);
 						
-						buddy.printStatus();
-				};
+						buddy.printStatus(numeroDaThread);
+ 				};
 		};
 };

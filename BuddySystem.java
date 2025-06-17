@@ -84,7 +84,9 @@ public class BuddySystem {
         return level;
     }
 
-    public void printStatus() {
+    public synchronized void printStatus(int numeroDaThread) {
+    		System.out.println();
+    		System.out.println("Thread em execução:" + numeroDaThread);
         System.out.println("Estado atual da memória:");
         for (int i = minLevel; i <= maxLevel; i++) {
             List<Integer> blocks = freeLists.get(i);

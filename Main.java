@@ -28,7 +28,7 @@ public class Main{
 	
 		for(int i = 0; i < numeroThreads; i++){
 			
-			thread[i] = new MinhaThread(buddy, queueRequisicoes, queueAlocadas);	
+			thread[i] = new MinhaThread(buddy, queueRequisicoes, queueAlocadas, i);	
 			thread[i].start();
 			
 		}
