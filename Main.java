@@ -11,7 +11,7 @@ public class Main{
 
 	public static void main(String[] args){
 	
-		int numeroThreads = 4;
+		int numeroThreads = 1;
 		Thread[] thread = new Thread[numeroThreads];
 		
 		Queue<Integer> queueRequisicoes = new ConcurrentLinkedQueue<>();
@@ -20,7 +20,7 @@ public class Main{
 		BuddySystem buddy = new BuddySystem(1024, 32);	
 	
 		 // Adiciona requisições na fila
-      for (int i = 0; i < 20; i++) {
+      for (int i = 0; i < 21; i++) {
           int tamanho = 32 + (i % 4) * 32; // Ex: 32, 64, 96, 128, ...
           queueRequisicoes.add(tamanho);
       }

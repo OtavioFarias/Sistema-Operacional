@@ -31,7 +31,8 @@ public class MinhaThread extends Thread{
 						
 						queueAlocadas.add(addr);
 						
-						buddy.printStatus(numeroDaThread);
+						//buddy.printStatus(numeroDaThread);
+						buddy.printTree();
  				};
 		};
 };

@@ -95,4 +95,36 @@ public class BuddySystem {
             }
         }
     }
+    
+    public synchronized void printTree() {
+    	System.out.println("\nVisualização da memória como árvore:");
+    	printBlockRecursive(0, maxLevel, "");
+		}
+    
+    private void printBlockRecursive(int address, int level, String indent) {
+		  int size = 1 << level;
+
+		  boolean isAllocated = allocatedBlocks.containsKey(address) && allocatedBlocks.get(address) == level;
+		  boolean isFree = freeLists.get(level).contains(address);
+
+		  String status;
+		  if (isAllocated) {
+		      status = "Ocupado";
+		  } else if (isFree) {
+		      status = "Livre";
+		  } else {
+		      status = "Dividido";
+		  }
+
+		  System.out.printf("%s[Endereço: %d, Tamanho: %d, Status: %s]%n", indent, address, size, status);
+
+		  // Só mostra filhos se estiver dividido (nem alocado nem livre) e não for nível mínimo
+		  if (status.equals("Dividido") && level > minLevel) {
+		      int halfSize = size / 2;
+		      printBlockRecursive(address, level - 1, indent + "  "); // Filho esquerdo
+		      printBlockRecursive(address + halfSize, level - 1, indent + "  "); // Filho direito
+		  }
+	}
+
+    
 }
