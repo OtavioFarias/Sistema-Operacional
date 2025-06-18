@@ -7,8 +7,10 @@ public class BuddySystem {
     private final int minLevel;
     private final Map<Integer, List<Integer>> freeLists; // Nível -> blocos livres (endereços)
     private final Map<Integer, Integer> allocatedBlocks; // Endereço -> Nível
-
+    private final int totalSize;
+    
     public BuddySystem(int totalSize, int minBlockSize) {
+        this.totalSize = totalSize;
         this.minLevel = (int) (Math.log(minBlockSize) / Math.log(2));
         this.maxLevel = (int) (Math.log(totalSize) / Math.log(2));
         this.freeLists = new HashMap<>();
@@ -125,6 +127,51 @@ public class BuddySystem {
 		      printBlockRecursive(address + halfSize, level - 1, indent + "  "); // Filho direito
 		  }
 	}
-
+	
+  private int getBlockSize(int address) {
+    Integer level = allocatedBlocks.get(address);
+    if (level != null){
+      return 1 << level;
+    }
+    return 0;
+  }
+  
+  private void performCleaningCycle(Queue<Integer> allocatedQueue, double cleaningPercentage) {
+    System.out.println("--> INICIANDO O CICLO DE LIMPEZA DE " + (cleaningPercentage * 100) + "%...");
     
+    double targetToFree = this.totalSize * cleaningPercentage;
+    double totalFreed = 0;
+    
+    while (totalFreed < targetToFree){
+      if (allocatedQueue.isEmpty()){
+        System.err.println("--> ERRO! Memória cheia e não há blocos para liberar.");
+        break;
+      }
+      
+      int addressToFree = allocatedQueue.peek();
+      int sizeToFree = getBlockSize(addressToFree);
+      
+      if (sizeToFree > 0){
+        allocatedQueue.remove();
+        this.free(addressToFree);
+        totalFreed += sizeToFree;
+        System.out.println("--> Liberou " + sizeToFree + "bytes. Total liberado no ciclo: " + totalFreed + "/" + targetToFree);
+      } else {
+        allocatedQueue.remove();
+      }
+    }
+    System.out.println("--> CICLO DE LIMPEZA CONCLUÍDO.");
+  }
+  
+  public synchronized Integer allocateWithCleaning(int size, Queue<Integer> allocatedQueue) {
+    Integer address = this.allocate(size);
+    
+    if (address == null) {
+      performCleaningCycle(allocatedQueue, 0.30);
+      
+      address = this.allocate(size);
+    }
+    
+    return address;
+  } 
 }
