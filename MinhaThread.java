@@ -16,23 +16,24 @@ public class MinhaThread extends Thread{
 				this.queueRequisicoes = queueRequisicoes;
 				this.queueAlocadas = queueAlocadas;
 		};
-
+    @Override
 		public void run(){
 				
 				while(!queueRequisicoes.isEmpty()){
-						Integer n = queueRequisicoes.remove();
+						Integer n = queueRequisicoes.poll();
+						if (n == null){
+						  continue;
+						}
 						
-						Integer addr = buddy.allocate(n);
+						Integer addr = buddy.allocateWithCleaning(n, queueAlocadas);
 						
-						while(addr == null){
-								buddy.free(queueAlocadas.remove());
-								addr = buddy.allocate(n); 
-						};
-						
-						queueAlocadas.add(addr);
-						
-						//buddy.printStatus(numeroDaThread);
-						buddy.printTree();
+						if (addr != null) {
+						  queueAlocadas.add(addr);
+						  System.out.println("Thread " + numeroDaThread + ": SUCESSO ao alocar " + n + " bytes no endereço " + addr);
+						  buddy.printTree();
+						} else {
+						  System.err.println("Thread " + numeroDaThread + ": FALHA FINAL ao alocar " + n + " bytes.");
+						}
  				};
 		};
 };
