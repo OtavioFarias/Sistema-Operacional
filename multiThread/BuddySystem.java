@@ -4,19 +4,23 @@ import java.util.*;
 
 public class BuddySystem {
     private final int maxLevel;
+    private final Queue<Integer> queueAlocadas;
     private final int minLevel;
     private final Map<Integer, List<Integer>> freeLists; // Nível -> blocos livres (endereços)
     private final Map<Integer, Integer> allocatedBlocks; // Endereço -> Nível
     private final int totalSize;
+    private int tamAlocado;
     private double cleaningPercent;
     
-    public BuddySystem(int totalSize, int minBlockSize, double cleaningPercent) {
+    public BuddySystem(int totalSize, int minBlockSize, double cleaningPercent, Queue<Integer> queueAlocadas) {
         this.totalSize = totalSize;
         this.minLevel = (int) (Math.log(minBlockSize) / Math.log(2));
         this.maxLevel = (int) (Math.log(totalSize) / Math.log(2));
-        this.freeLists = new HashMap<>();
-        this.allocatedBlocks = new HashMap<>();
+        this.freeLists =  new HashMap<>();
+        this.allocatedBlocks =  Collections.synchronizedMap(new HashMap<>());
         this.cleaningPercent = cleaningPercent;
+        this.queueAlocadas = queueAlocadas;
+				this.tamAlocado = 0;
 
         for (int i = minLevel; i <= maxLevel; i++) {
             freeLists.put(i, new ArrayList<>());
@@ -26,23 +30,27 @@ public class BuddySystem {
         freeLists.get(maxLevel).add(0);
     }
 
-    public synchronized Integer allocate(int size) {
+    public Integer allocate(int size) {
         int requiredLevel = calculateLevel(size);
-
+			
         for (int level = requiredLevel; level <= maxLevel; level++) {
+        synchronized(freeLists){
             if (!freeLists.get(level).isEmpty()) {
                 int address = split(level, requiredLevel);
                 allocatedBlocks.put(address, requiredLevel);
+                tamAlocado += size;
+                queueAlocadas.add(address);
                 return address;
             }
+        }
         }
         return null; // Falha na alocação
     }
 
-    public synchronized void free(int address) {
+    public void free(int address) {
         Integer level = allocatedBlocks.remove(address);
         if (level == null) return;
-
+				tamAlocado -= getBlockSize(address);
         merge(address, level);
     }
 
@@ -59,8 +67,11 @@ public class BuddySystem {
     }
 
     private void merge(int address, int level) {
+    		
         while (level < maxLevel) {
             int buddyAddress = getBuddyAddress(address, level);
+
+						synchronized (freeLists){
 
             List<Integer> list = freeLists.get(level);
             if (list.remove((Integer) buddyAddress)) {
@@ -70,8 +81,9 @@ public class BuddySystem {
             } else {
                 break;
             }
-        }
+       	}
         freeLists.get(level).add(address);
+        }
     }
 
     private int getBuddyAddress(int address, int level) {
@@ -176,4 +188,15 @@ public class BuddySystem {
     
     return address;
   } 
+
+	public void freePercent(){
+	
+		free(queueAlocadas.remove());
+		
+		if(cleaningPercent < (100-100*tamAlocado/maxLevel)) {
+		
+			free(queueAlocadas.remove());
+			
+		}
+	}
 }

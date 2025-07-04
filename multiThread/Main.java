@@ -7,32 +7,55 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Main{
 
 	public static void main(String[] args){
 	
-		int numeroThreads = Integer.parseInt(args[0]);
+		int tamanhoTotal = Integer.parseInt(args[0]);
+		int blocoMinimo =  Integer.parseInt(args[1]);
+		int numeroRequisicoes = Integer.parseInt(args[2]);
+		int numeroThreads = Integer.parseInt(args[3]);
+		double cleaningPercent = Double.parseDouble(args[4]);
+		
+		//System.out.println("\nTamanho Total: " + tamanhoTotal + "\nTamanho mínimo do bloco: " + blocoMinimo + "\nNúmero de Requisições: " + numeroRequisicoes + "\nNúmero de Threads: " + numeroThreads + "\nPorcentagem de limpeza: " + cleaningPercent + "\n");
+		
 		Thread[] thread = new Thread[numeroThreads];
 		
 		Queue<Integer> queueRequisicoes = new ConcurrentLinkedQueue<>();
 		Queue<Integer> queueAlocadas = new ConcurrentLinkedQueue<>();
 
-		BuddySystem buddy = new BuddySystem(Integer.parseInt(args[0]) , Integer.parseInt(args[1]) , Double.parseDouble(args[3]));
+		BuddySystem buddy = new BuddySystem(tamanhoTotal, blocoMinimo, cleaningPercent, queueAlocadas);
 	
 		 // Adiciona requisições na fila
-      for (int i = 0; i <= Integer.parseInt(args[2]) ; i++) {
-          int tamanho = Integer.parseInt(args[1]) + (i % 4) * Integer.parseInt(args[1]); // Ex: 32, 64, 96, 128, ...
+      for (int i = 0; i <=  numeroRequisicoes; i++) {
+          int tamanho = blocoMinimo + (i % 4) * blocoMinimo; // Ex: 32, 64, 96, 128, ...
           queueRequisicoes.add(tamanho);
       }
 	
 	
+		long inicio = System.nanoTime();
+	
 		for(int i = 0; i < numeroThreads; i++){
 			
-			thread[i] = new MinhaThread(buddy, queueRequisicoes, queueAlocadas, i);	
+			thread[i] = new MinhaThread(buddy, queueRequisicoes, i);	
 			thread[i].start();
 			
 		}
 		
-	}
+		long fim = System.nanoTime();
+    long tempoExecucaoNs = fim - inicio;
+		
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("resultados.csv", true))) {
+      writer.write(tamanhoTotal + "," + blocoMinimo + "," + numeroRequisicoes + "," +  numeroThreads + "," + cleaningPercent + "," + tempoExecucaoNs);
+      writer.newLine(); // pula para a próxima linha
 
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+  	}
+	}
 }

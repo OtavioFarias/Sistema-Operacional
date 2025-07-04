@@ -7,36 +7,37 @@ public class MinhaThread extends Thread{
 
 		BuddySystem buddy;
 		Queue<Integer> queueRequisicoes;
-		Queue<Integer> queueAlocadas;
 		int numeroDaThread;
 	
-		public MinhaThread(BuddySystem buddy, Queue<Integer> queueRequisicoes, Queue<Integer> queueAlocadas, int numeroDaThread){
+		public MinhaThread(BuddySystem buddy, Queue<Integer> queueRequisicoes, int numeroDaThread){
 				this.numeroDaThread = numeroDaThread;
 				this.buddy = buddy;
 				this.queueRequisicoes = queueRequisicoes;
-				this.queueAlocadas = queueAlocadas;
 		};
     @Override
 		public void run(){
-				
-				while(!queueRequisicoes.isEmpty()){
-						Integer n = queueRequisicoes.poll();
-						if (n == null){
-						  continue;
-						}
+					
+					try{
+						Integer n = queueRequisicoes.remove();
 						
-						Integer addr = buddy.allocateWithCleaning(n, queueAlocadas);
-						/*
+						if(n != null){
 						
-						if (addr != null) {
-						  queueAlocadas.add(addr);
-						  //System.out.println("Thread " + numeroDaThread + ": SUCESSO ao alocar " + n + " bytes no endereço " + addr);
-						  buddy.printTree();
-						} else {
-						  System.err.println("Thread " + numeroDaThread + ": FALHA FINAL ao alocar " + n + " bytes.");
+							Integer addr = buddy.allocate(n);
+							
+							while(addr == null) {
+						
+								buddy.freePercent();
+								addr = buddy.allocate(n);
+						
+								
+							} 
+							
+							//buddy.printTree();
+							
 						}
-						*/
-						//buddy.printTree();
- 				};
+				}catch(java.util.NoSuchElementException e){
+   						 // Ignorado intencionalmente
+				}
+
 		};
 };
