@@ -1,6 +1,5 @@
-package buddy;
+package multiThread.buddy;
 
-import buddy.MinhaThread;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -20,8 +19,6 @@ public class Main{
 		int numeroRequisicoes = Integer.parseInt(args[2]);
 		int numeroThreads = Integer.parseInt(args[3]);
 		double cleaningPercent = Double.parseDouble(args[4]);
-		
-		//System.out.println("\nTamanho Total: " + tamanhoTotal + "\nTamanho mínimo do bloco: " + blocoMinimo + "\nNúmero de Requisições: " + numeroRequisicoes + "\nNúmero de Threads: " + numeroThreads + "\nPorcentagem de limpeza: " + cleaningPercent + "\n");
 		
 		Thread[] thread = new Thread[numeroThreads];
 		
@@ -49,7 +46,7 @@ public class Main{
 		long fim = System.nanoTime();
     long tempoExecucaoNs = fim - inicio;
 		
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter("resultados.csv", true))) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("../multiThreadResultados/resultados_" + args[2] + "_requisicoes.csv", true))) {
       writer.write(tamanhoTotal + "," + blocoMinimo + "," + numeroRequisicoes + "," +  numeroThreads + "," + cleaningPercent + "," + tempoExecucaoNs);
       writer.newLine(); // pula para a próxima linha
 

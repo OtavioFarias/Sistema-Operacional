@@ -1,7 +1,6 @@
-package buddy;
+package multiThread.buddy;
 
 import java.util.Queue;
-import buddy.BuddySystem;
 
 public class MinhaThread extends Thread{
 

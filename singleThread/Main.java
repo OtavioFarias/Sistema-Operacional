@@ -1,4 +1,4 @@
-package buddy;
+package singleThread.buddy;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -16,7 +16,6 @@ public class Main{
 		int tamanhoTotal = Integer.parseInt(args[0]);
 		int blocoMinimo =  Integer.parseInt(args[1]);
 		int numeroRequisicoes = Integer.parseInt(args[2]);
-		int numeroThreads = Integer.parseInt(args[3]);
 		double cleaningPercent = Double.parseDouble(args[4]);
 		
 		Queue<Integer> queueRequisicoes = new LinkedList<Integer>();
@@ -45,7 +44,7 @@ public class Main{
 		long fim = System.nanoTime();
     long tempoExecucaoNs = fim - inicio;
 		
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter("resultados.csv", true))) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("../singleThreadResultados/resultados_" + args[2] + "_requisicoes.csv", true))) {
       writer.write(tamanhoTotal + "," + blocoMinimo + "," + numeroRequisicoes + "," +  numeroThreads + "," + cleaningPercent + "," + tempoExecucaoNs);
       writer.newLine(); // pula para a próxima linha
 

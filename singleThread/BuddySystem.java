@@ -1,4 +1,4 @@
-package buddy;
+package singleThread.buddy;
 
 import java.util.*;
 

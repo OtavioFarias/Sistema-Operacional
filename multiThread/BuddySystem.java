@@ -1,4 +1,4 @@
-package buddy;
+package multiThread.buddy;
 
 import java.util.*;
 
