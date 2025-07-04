@@ -5,21 +5,32 @@ import java.util.Queue;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Main{
 
 	public static void main(String[] args){
 	
+		int tamanhoTotal = Integer.parseInt(args[0]);
+		int blocoMinimo =  Integer.parseInt(args[1]);
+		int numeroRequisicoes = Integer.parseInt(args[2]);
+		int numeroThreads = Integer.parseInt(args[3]);
+		double cleaningPercent = Double.parseDouble(args[4]);
 		
 		Queue<Integer> queueRequisicoes = new LinkedList<Integer>();
 		Queue<Integer> queueAlocadas = new LinkedList<Integer>();
 
-		BuddySystem buddy = new BuddySystem(Integer.parseInt(args[0]) , Integer.parseInt(args[1]) , Double.parseDouble(args[3]));
+		BuddySystem buddy = new BuddySystem(tamanhoTotal , blocoMinimo , cleaningPercent);
 	
 		 // Adiciona requisições na fila
-      for (int i = 0; i <= Integer.parseInt(args[2]) ; i++) {
-          int tamanho = Integer.parseInt(args[1]) + (i % 4) * Integer.parseInt(args[1]); // Ex: 32, 64, 96, 128, ...
+      for (int i = 0; i <= numeroRequisicoes ; i++) {
+          int tamanho = blocoMinimo + (i % 4) * blocoMinimo; // Ex: 32, 64, 96, 128, ...
           queueRequisicoes.add(tamanho);
       }
+	
+		long inicio = System.nanoTime();
 	
 		while(!queueRequisicoes.isEmpty()){
 			Integer n = queueRequisicoes.poll();
@@ -31,7 +42,17 @@ public class Main{
 		}
 		
 		//buddy.printTree();
+		long fim = System.nanoTime();
+    long tempoExecucaoNs = fim - inicio;
 		
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("resultados.csv", true))) {
+      writer.write(tamanhoTotal + "," + blocoMinimo + "," + numeroRequisicoes + "," +  numeroThreads + "," + cleaningPercent + "," + tempoExecucaoNs);
+      writer.newLine(); // pula para a próxima linha
+
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+  	}
 	}
 
 }
