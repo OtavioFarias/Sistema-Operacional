@@ -46,7 +46,7 @@ public class Main{
 		long fim = System.nanoTime();
     long tempoExecucaoNs = fim - inicio;
 		
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter("../multiThreadResultados/resultados_" + args[2] + "_requisicoes.csv", true))) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("multiThreadResultados/resultados_" + args[2] + "_requisicoes.csv", true))) {
       writer.write(tamanhoTotal + "," + blocoMinimo + "," + numeroRequisicoes + "," +  numeroThreads + "," + cleaningPercent + "," + tempoExecucaoNs);
       writer.newLine(); // pula para a próxima linha
 
