@@ -16,7 +16,7 @@ public class BuddySystem {
         this.totalSize = totalSize;
         this.minLevel = (int) (Math.log(minBlockSize) / Math.log(2));
         this.maxLevel = (int) (Math.log(totalSize) / Math.log(2));
-        this.freeLists =  new HashMap<>();
+        this.freeLists =  Collections.synchronizedMap(new HashMap<>());
         this.allocatedBlocks =  Collections.synchronizedMap(new HashMap<>());
         this.cleaningPercent = cleaningPercent;
         this.queueAlocadas = queueAlocadas;
@@ -34,7 +34,7 @@ public class BuddySystem {
         int requiredLevel = calculateLevel(size);
 			
         for (int level = requiredLevel; level <= maxLevel; level++) {
-        synchronized(freeLists){
+  
             if (!freeLists.get(level).isEmpty()) {
                 int address = split(level, requiredLevel);
                 allocatedBlocks.put(address, requiredLevel);
@@ -42,7 +42,7 @@ public class BuddySystem {
                 queueAlocadas.add(address);
                 return address;
             }
-        }
+        
         }
         return null; // Falha na alocação
     }
@@ -71,7 +71,6 @@ public class BuddySystem {
         while (level < maxLevel) {
             int buddyAddress = getBuddyAddress(address, level);
 
-						synchronized (freeLists){
 
             List<Integer> list = freeLists.get(level);
             if (list.remove((Integer) buddyAddress)) {
@@ -81,7 +80,7 @@ public class BuddySystem {
             } else {
                 break;
             }
-       	}
+       	
         freeLists.get(level).add(address);
         }
     }

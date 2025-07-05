@@ -13,6 +13,7 @@ public class MinhaThread extends Thread{
 				this.buddy = buddy;
 				this.queueRequisicoes = queueRequisicoes;
 		};
+		
     @Override
 		public void run(){
 					
