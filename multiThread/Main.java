@@ -40,14 +40,25 @@ public class Main {
 
 
 	  long inicio = System.nanoTime();
-
+		/*
 	  // Inicia as threads
 	  for (int i = 0; i < numeroThreads; i++) {
 	      threads[i].start();
+	      
 	  }
 		
 		for (int i = 0; i < numeroThreads; i++) {
 		  try {
+		  		
+		      threads[i].join();
+		  } catch (InterruptedException e) {
+		      e.printStackTrace(); // ou trate de outra forma se preferir
+		  }
+		}
+		*/
+		for (int i = 0; i < numeroThreads; i++) {
+		  try {
+		  		threads[i].start();
 		      threads[i].join();
 		  } catch (InterruptedException e) {
 		      e.printStackTrace(); // ou trate de outra forma se preferir

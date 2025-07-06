@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo "tamanhoMem,minBloco,requisicoes,threads,cleaningPercent,execucao" > resultados.csv
 
 for p1 in 1024 2048 4096 8192; do
   for p2 in 2 4 8 16 32 64; do
