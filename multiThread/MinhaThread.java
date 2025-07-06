@@ -15,29 +15,33 @@ public class MinhaThread extends Thread{
 		};
 		
     @Override
-		public void run(){
-					
-					try{
-						Integer n = queueRequisicoes.remove();
-						
-						if(n != null){
-						
-							Integer addr = buddy.allocate(n);
-							
-							while(addr == null) {
-						
-								buddy.freePercent();
-								addr = buddy.allocate(n);
-						
-								
-							} 
-							
-							//buddy.printTree();
-							
-						}
-				}catch(java.util.NoSuchElementException e){
-   						 // Ignorado intencionalmente
-				}
+		public void run() {
+				while(!queueRequisicoes.isEmpty()){
+					Integer n = queueRequisicoes.poll();
+					if (n == null){
+						return;
+					}
+	
+			    Integer addr = buddy.allocate(n);
 
-		};
+			    while (addr == null) {
+			    		try{
+			    		
+									buddy.mutexFree.acquire();
+								  buddy.freePercent();
+			        
+			        }catch (InterruptedException e) {
+									e.printStackTrace();
+							}finally {
+							
+									buddy.mutexFree.release();
+									
+							}
+			        addr = buddy.allocate(n);
+			    }
+					
+			    //buddy.printTree(); // Se quiser visualizar
+				}
+		}
+
 };

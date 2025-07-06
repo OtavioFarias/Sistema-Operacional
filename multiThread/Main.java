@@ -1,7 +1,6 @@
 package multiThread.buddy;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Main {
 
@@ -20,7 +19,7 @@ public class Main {
 	
 	  // Inicializa o BuddySystem
 	  BuddySystem buddy = new BuddySystem(tamanhoTotal, blocoMinimo, cleaningPercent, queueAlocadas);
-
+    
 	  // Inicializa uma fila de requisições por thread
 	  List<Queue<Integer>> filasPorThread = new ArrayList<>();
 	  for (int i = 0; i < numeroThreads; i++) {
@@ -34,14 +33,27 @@ public class Main {
 	      filasPorThread.get(threadIndex).add(tamanho);
 	  }
 
-	  long inicio = System.nanoTime();
-
-	  // Cria e inicia as threads
+		// Cria as threads
 	  for (int i = 0; i < numeroThreads; i++) {
 	      threads[i] = new MinhaThread(buddy, filasPorThread.get(i), i);
-	      threads[i].start();
 	  }
 
+
+	  long inicio = System.nanoTime();
+
+	  // Inicia as threads
+	  for (int i = 0; i < numeroThreads; i++) {
+	      threads[i].start();
+	  }
+		
+		for (int i = 0; i < numeroThreads; i++) {
+		  try {
+		      threads[i].join();
+		  } catch (InterruptedException e) {
+		      e.printStackTrace(); // ou trate de outra forma se preferir
+		  }
+		}
+		
 		long fim = System.nanoTime();
     long tempoExecucaoNs = fim - inicio;
 		
@@ -56,6 +68,6 @@ public class Main {
   	}
   	*/
   	
-  	System.out.println("Número threads: " + numeroThreads + " Tempo: " + tempoExecucaoNs);
+  	System.out.println("Número threads: " + numeroThreads + " Tempo: " + tempoExecucaoNs/1000);
 	}
 }

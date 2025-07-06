@@ -1,32 +1,25 @@
 package multiThread.buddy;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Semaphore;
 import java.util.*;
 
 public class BuddySystem {
     private final int maxLevel;
-    private final int minLevel;
     private final Queue<Integer> queueAlocadas;
+    private final int minLevel;
     private final Map<Integer, List<Integer>> freeLists; // Nível -> blocos livres (endereços)
     private final Map<Integer, Integer> allocatedBlocks; // Endereço -> Nível
     private final int totalSize;
     private int tamAlocado;
     private double cleaningPercent;
-    private Semaphore mutexBuddy = new Semaphore(1);
-    public Semaphore mutexFree = new Semaphore(1);
-  
-  	public BuddySystem(int totalSize, int minBlockSize, double cleaningPercent, Queue<Integer> queueAlocadas) {
+    
+    private final Queue<Integer> queueAlocadas;public BuddySystem(int totalSize, int minBlockSize, double cleaningPercent, Queue<Integer> queueAlocadas) {
         this.totalSize = totalSize;
         this.minLevel = (int) (Math.log(minBlockSize) / Math.log(2));
         this.maxLevel = (int) (Math.log(totalSize) / Math.log(2));
-        //this.freeLists =  Collections.synchronizedMap(new HashMap<>());
+        this.freeLists =  Collections.synchronizedMap(new HashMap<>());
         this.allocatedBlocks =  Collections.synchronizedMap(new HashMap<>());
-        this.freeLists =  new HashMap<>();
-        //this.allocatedBlocks =  new HashMap<>();
         this.cleaningPercent = cleaningPercent;
-        //this.queueAlocadas = queueAlocadas;
-        this.queueAlocadas = new ConcurrentLinkedQueue<>();
+        this.queueAlocadas = queueAlocadas;
 				this.tamAlocado = 0;
 
         for (int i = minLevel; i <= maxLevel; i++) {
@@ -39,26 +32,17 @@ public class BuddySystem {
 
     public Integer allocate(int size) {
         int requiredLevel = calculateLevel(size);
-
+			
         for (int level = requiredLevel; level <= maxLevel; level++) {
+  
             if (!freeLists.get(level).isEmpty()) {
                 int address = split(level, requiredLevel);
                 allocatedBlocks.put(address, requiredLevel);
-                
-                //try{
-                	//mutexFree.acquire();
-                	queueAlocadas.add(address);
-                	
-                //}catch (InterruptedException e) {
-								//	e.printStackTrace();
-								//}finally {
-							
-									//mutexFree.release();
-									
-								//}
                 tamAlocado += size;
+                queueAlocadas.add(address);
                 return address;
             }
+        
         }
         return null; // Falha na alocação
     }
@@ -66,55 +50,39 @@ public class BuddySystem {
     public void free(int address) {
         Integer level = allocatedBlocks.remove(address);
         if (level == null) return;
-
+				tamAlocado -= getBlockSize(address);
         merge(address, level);
     }
 
     private int split(int fromLevel, int toLevel) {
-    
-    	int address = 0;
-			try{
-					mutexBuddy.acquire();
-			    address = freeLists.get(fromLevel).remove(0);
+        int address = freeLists.get(fromLevel).remove(0);
 
-			    while (fromLevel > toLevel) {
-			        fromLevel--;
-			        int buddyAddress = address + (1 << fromLevel);
-			        freeLists.get(fromLevel).add(buddyAddress);
-			    }
-					
-				}catch (InterruptedException e) {
-		  		e.printStackTrace();
-			  }finally {
-					  mutexBuddy.release();
-					  return address;
-				}
-       
+        while (fromLevel > toLevel) {
+            fromLevel--;
+            int buddyAddress = address + (1 << fromLevel);
+            freeLists.get(fromLevel).add(buddyAddress);
+        }
+
+        return address;
     }
 
     private void merge(int address, int level) {
+    		
+        while (level < maxLevel) {
+            int buddyAddress = getBuddyAddress(address, level);
 
-				try{    
-						mutexBuddy.acquire();
-				    while (level < maxLevel) {
-				        int buddyAddress = getBuddyAddress(address, level);
 
-				        List<Integer> list = freeLists.get(level);
-				        if (list.remove((Integer) buddyAddress)) {
-				            // Fuse and go one level up
-				            address = Math.min(address, buddyAddress);
-				            level++;
-				        } else {
-				            break;
-				        }
-				    }
-				    freeLists.get(level).add(address);
-				    
-      }catch (InterruptedException e) {
-      		e.printStackTrace();
-      }finally {
-    		  mutexBuddy.release();
-    	}
+            List<Integer> list = freeLists.get(level);
+            if (list.remove((Integer) buddyAddress)) {
+                // Fuse and go one level up
+                address = Math.min(address, buddyAddress);
+                level++;
+            } else {
+                break;
+            }
+       	
+        freeLists.get(level).add(address);
+        }
     }
 
     private int getBuddyAddress(int address, int level) {
@@ -143,7 +111,7 @@ public class BuddySystem {
         }
     }
     
-    public void printTree() {
+    public synchronized void printTree() {
     	System.out.println("\nVisualização da memória como árvore:");
     	printBlockRecursive(0, maxLevel, "");
 		}
@@ -219,8 +187,8 @@ public class BuddySystem {
     
     return address;
   } 
-  
-  public void freePercent(){
+
+	public void freePercent(){
 	
 		if (queueAlocadas.isEmpty()) return;
 		
@@ -231,14 +199,11 @@ public class BuddySystem {
 		System.out.println("Porcentagem liberada" + (100-100*tamAlocado/totalSize));
 		System.out.println("CLeaning Percent:"  + cleaningPercent);
 		System.out.println();
-		
+		*/
 		if(cleaningPercent < (100-100*tamAlocado/totalSize)) {
-			//System.out.println(100-100*tamAlocado/totalSize);
+			System.out.println(100-100*tamAlocado/totalSize);
 			free(queueAlocadas.remove());
 			
 		}
-		*/
 	}
-  
-  
 }
