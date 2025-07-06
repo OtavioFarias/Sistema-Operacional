@@ -1,8 +1,11 @@
 package multiThread.buddy;
 
+import java.util.concurrent.Semaphore;
 import java.util.*;
 
 public class Main {
+
+	public static Semaphore threadsAcabaram;
 
 	public static void main(String[] args) {
 
@@ -11,7 +14,8 @@ public class Main {
 	  int numeroRequisicoes = Integer.parseInt(args[2]);
 	  int numeroThreads = Integer.parseInt(args[3]);
 	  double cleaningPercent = Double.parseDouble(args[4]);
-
+		threadsAcabaram = new Semaphore(1-numeroThreads);  
+	
 	  Thread[] threads = new Thread[numeroThreads];
 
 	  // Fila de blocos alocados compartilhada
@@ -40,13 +44,13 @@ public class Main {
 
 
 	  long inicio = System.nanoTime();
-		/*
+		
 	  // Inicia as threads
 	  for (int i = 0; i < numeroThreads; i++) {
 	      threads[i].start();
 	      
 	  }
-		
+		/*
 		for (int i = 0; i < numeroThreads; i++) {
 		  try {
 		  		
@@ -55,7 +59,7 @@ public class Main {
 		      e.printStackTrace(); // ou trate de outra forma se preferir
 		  }
 		}
-		*/
+		
 		for (int i = 0; i < numeroThreads; i++) {
 		  try {
 		  		threads[i].start();
@@ -64,6 +68,15 @@ public class Main {
 		      e.printStackTrace(); // ou trate de outra forma se preferir
 		  }
 		}
+		*/
+
+		try{
+		
+				threadsAcabaram.acquire();
+							
+		} catch (InterruptedException e) {
+				e.printStackTrace();
+		} 
 		
 		long fim = System.nanoTime();
     long tempoExecucaoNs = fim - inicio;
@@ -82,3 +95,4 @@ public class Main {
   	System.out.println("Número threads: " + numeroThreads + " Tempo: " + tempoExecucaoNs/1000);
 	}
 }
+

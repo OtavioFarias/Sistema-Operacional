@@ -1,6 +1,7 @@
 package multiThread.buddy;
 
 import java.util.Queue;
+import java.util.concurrent.Semaphore;
 
 public class MinhaThread extends Thread{
 
@@ -42,6 +43,9 @@ public class MinhaThread extends Thread{
 					
 			    //buddy.printTree(); // Se quiser visualizar
 				}
+				
+				Main.threadsAcabaram.release();
+				
 		}
 
 };

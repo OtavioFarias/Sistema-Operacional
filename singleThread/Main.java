@@ -21,8 +21,8 @@ public class Main{
 		Queue<Integer> queueRequisicoes = new LinkedList<Integer>();
 		Queue<Integer> queueAlocadas = new LinkedList<Integer>();
 
-		BuddySystem buddy = new BuddySystem(tamanhoTotal , blocoMinimo , cleaningPercent);
-	
+		BuddySystem buddy = new BuddySystem(tamanhoTotal, blocoMinimo, cleaningPercent, queueAlocadas);
+    
 		 // Adiciona requisições na fila
       for (int i = 0; i <= numeroRequisicoes ; i++) {
           int tamanho = blocoMinimo + (i % 4) * blocoMinimo; // Ex: 32, 64, 96, 128, ...
@@ -32,18 +32,29 @@ public class Main{
 		long inicio = System.nanoTime();
 	
 		while(!queueRequisicoes.isEmpty()){
-			Integer n = queueRequisicoes.poll();
-			if (n == null){
-			  continue;
-			}
-			
-			Integer addr = buddy.allocate(n);
-		}
+					Integer n = queueRequisicoes.poll();
+					if (n == null){
+						return;
+					}
+	
+			    Integer addr = buddy.allocate(n);
+
+			    while (addr == null) {
+			    
+			    		
+								  buddy.freePercent();
+			        
+			       
+			        addr = buddy.allocate(n);
+			    }
+					
+			    //buddy.printTree(); // Se quiser visualizar
+				}
 		
 		//buddy.printTree();
 		long fim = System.nanoTime();
     long tempoExecucaoNs = fim - inicio;
-		
+		/*
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter("singleThreadResultados/resultados_" + args[2] + "_requisicoes.csv", true))) {
       writer.write(tamanhoTotal + "," + blocoMinimo + "," + numeroRequisicoes + "," +  0 + "," + cleaningPercent + "," + tempoExecucaoNs);
       writer.newLine(); // pula para a próxima linha
@@ -51,7 +62,10 @@ public class Main{
     }
     catch (IOException e) {
       e.printStackTrace();
-  	}
+  	}*/
+  	
+  	System.out.println(" Tempo: " + tempoExecucaoNs/1000);
+	
 	}
 
 }
