@@ -1,7 +1,7 @@
-package multiThread.buddy;
+package buddy;
 
-import java.util.concurrent.Semaphore;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class Main {
 
@@ -9,90 +9,45 @@ public class Main {
 
 	public static void main(String[] args) {
 
-	  int tamanhoTotal = Integer.parseInt(args[0]);
-	  int blocoMinimo = Integer.parseInt(args[1]);
-	  int numeroRequisicoes = Integer.parseInt(args[2]);
-	  int numeroThreads = Integer.parseInt(args[3]);
-	  double cleaningPercent = Double.parseDouble(args[4]);
-		threadsAcabaram = new Semaphore(1-numeroThreads);  
-	
-	  Thread[] threads = new Thread[numeroThreads];
+		int tamanhoTotal = Integer.parseInt(args[0]);
+		int blocoMinimo = Integer.parseInt(args[1]);
+		int numeroRequisicoes = Integer.parseInt(args[2]);
+		int numeroThreads = Integer.parseInt(args[3]);
+		double cleaningPercent = Double.parseDouble(args[4]);
 
-	  // Fila de blocos alocados compartilhada
-	 	Queue<Integer> queueAlocadas = new LinkedList<>();
-	
-	  // Inicializa o BuddySystem
-	  BuddySystem buddy = new BuddySystem(tamanhoTotal, blocoMinimo, cleaningPercent, queueAlocadas);
-    
-	  // Inicializa uma fila de requisições por thread
-	  List<Queue<Integer>> filasPorThread = new ArrayList<>();
-	  for (int i = 0; i < numeroThreads; i++) {
-	      filasPorThread.add(new LinkedList<>());
-	  }
+		threadsAcabaram = new Semaphore(1 - numeroThreads);
 
-	  // Distribui requisições entre as filas (round-robin)
-	  for (int i = 0; i < numeroRequisicoes; i++) {
-	      int tamanho = blocoMinimo + (i % 4) * blocoMinimo; // Ex: 32, 64, 96, 128...
-	      int threadIndex = i % numeroThreads;
-	      filasPorThread.get(threadIndex).add(tamanho);
-	  }
+		Thread[] threads = new Thread[numeroThreads];
+		List<Queue<Integer>> filas = new ArrayList<>();
 
-		// Cria as threads
-	  for (int i = 0; i < numeroThreads; i++) {
-	      threads[i] = new MinhaThread(buddy, filasPorThread.get(i), i);
-	  }
-
-
-	  long inicio = System.nanoTime();
-		
-	  // Inicia as threads
-	  for (int i = 0; i < numeroThreads; i++) {
-	      threads[i].start();
-	      
-	  }
-		/*
+		// Distribui requisições entre threads (round-robin)
 		for (int i = 0; i < numeroThreads; i++) {
-		  try {
-		  		
-		      threads[i].join();
-		  } catch (InterruptedException e) {
-		      e.printStackTrace(); // ou trate de outra forma se preferir
-		  }
+			filas.add(new ConcurrentLinkedQueue<>());
 		}
-		
-		for (int i = 0; i < numeroThreads; i++) {
-		  try {
-		  		threads[i].start();
-		      threads[i].join();
-		  } catch (InterruptedException e) {
-		      e.printStackTrace(); // ou trate de outra forma se preferir
-		  }
-		}
-		*/
 
-		try{
-		
-				threadsAcabaram.acquire();
-							
+		for (int i = 0; i < numeroRequisicoes; i++) {
+			int tam = blocoMinimo + (i % 4) * blocoMinimo;
+			int idx = i % numeroThreads;
+			filas.get(idx).add(tam);
+		}
+
+		long inicio = System.nanoTime();
+
+		// Cria threads, cada uma com seu próprio BuddySystem
+		for (int i = 0; i < numeroThreads; i++) {
+			BuddySystem buddy = new BuddySystem(tamanhoTotal, blocoMinimo, cleaningPercent, new ConcurrentLinkedQueue<>());
+			threads[i] = new MinhaThread(buddy, filas.get(i), i);
+			threads[i].start();
+		}
+
+		try {
+			threadsAcabaram.acquire();
 		} catch (InterruptedException e) {
-				e.printStackTrace();
-		} 
-		
-		long fim = System.nanoTime();
-    long tempoExecucaoNs = fim - inicio;
-		
-		/*
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter("multiThreadResultados/resultados_" + args[2] + "_requisicoes.csv", true))) {
-      writer.write(tamanhoTotal + "," + blocoMinimo + "," + numeroRequisicoes + "," +  numeroThreads + "," + cleaningPercent + "," + tempoExecucaoNs);
-      writer.newLine(); // pula para a próxima linha
+			e.printStackTrace();
+		}
 
-    }
-    catch (IOException e) {
-      e.printStackTrace();
-  	}
-  	*/
-  	
-  	System.out.println("Número threads: " + numeroThreads + " Tempo: " + tempoExecucaoNs/1000);
+		long fim = System.nanoTime();
+		double tempo = (fim - inicio) / 1_000_000_000.0;
+		System.out.printf("Número de threads: %d | Tempo: %.3f segundos%n", numeroThreads, tempo);
 	}
 }
-

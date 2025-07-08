@@ -1,51 +1,33 @@
-package multiThread.buddy;
+package buddy;
 
 import java.util.Queue;
-import java.util.concurrent.Semaphore;
 
-public class MinhaThread extends Thread{
+public class MinhaThread extends Thread {
 
-		BuddySystem buddy;
-		Queue<Integer> queueRequisicoes;
-		int numeroDaThread;
-	
-		public MinhaThread(BuddySystem buddy, Queue<Integer> queueRequisicoes, int numeroDaThread){
-				this.numeroDaThread = numeroDaThread;
-				this.buddy = buddy;
-				this.queueRequisicoes = queueRequisicoes;
-		};
-		
-    @Override
-		public void run() {
-				while(!queueRequisicoes.isEmpty()){
-					Integer n = queueRequisicoes.poll();
-					if (n == null){
-						return;
-					}
-	
-			    Integer addr = buddy.allocate(n);
+	private final BuddySystem buddy;
+	private final Queue<Integer> fila;
+	private final int numeroDaThread;
 
-			    while (addr == null) {
-			    		try{
-			    		
-									buddy.mutexFree.acquire();
-								  buddy.freePercent();
-			        
-			        }catch (InterruptedException e) {
-									e.printStackTrace();
-							}finally {
-							
-									buddy.mutexFree.release();
-									
-							}
-			        addr = buddy.allocate(n);
-			    }
-					
-			    //buddy.printTree(); // Se quiser visualizar
-				}
-				
-				Main.threadsAcabaram.release();
-				
+	public MinhaThread(BuddySystem buddy, Queue<Integer> fila, int numeroDaThread) {
+		this.buddy = buddy;
+		this.fila = fila;
+		this.numeroDaThread = numeroDaThread;
+	}
+
+	@Override
+	public void run() {
+		while (!fila.isEmpty()) {
+			Integer n = fila.poll();
+			if (n == null) break;
+
+			Integer addr = buddy.allocate(n);
+
+			while (addr == null) {
+				buddy.freePercent(); // limpa espaço
+				addr = buddy.allocate(n);
+			}
 		}
 
-};
+		Main.threadsAcabaram.release();
+	}
+}
